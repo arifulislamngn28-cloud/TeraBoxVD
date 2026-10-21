@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: teraboxvd
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install --omit=dev || true
+    startCommand: node server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: PROVIDER
+        value: auto
+      - key: HLS_PROXY
+        value: "1"
+      - key: TRUST_PROXY
+        value: "1"
+      # --- commercial TeraBox API (optional) ---
+      - key: TBX_API_KEY
+        sync: false
+      - key: TBX_API_SECRET
+        sync: false
+      # --- your own TeraBox account (optional) ---
+      - key: TB_CLIENT_ID
+        sync: false
+      - key: TB_CLIENT_SECRET
+        sync: false
+      - key: TB_PRIVATE_SECRET
+        sync: false
+      # --- security ---
+      - key: PROXY_SECRET
+        generateValue: true

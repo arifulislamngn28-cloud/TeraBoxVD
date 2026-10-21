@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>TeraBoxVD — Stream & Download TeraBox Links</title>
+    <meta
+      name="description"
+      content="Paste a TeraBox share link to browse the files inside, stream video in the browser and download direct links. No sign-up, no app install."
+    />
+    <meta name="theme-color" content="#0B1220" />
+    <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/assets/img/favicon.svg" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="stylesheet" href="/assets/css/app.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="bg-glow" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <a class="brand" href="/">
+        <span class="brand-mark">TV</span>
+        <span class="brand-text">
+          <strong>TeraBox<em>VD</em></strong>
+          <small>Stream &amp; download TeraBox links</small>
+        </span>
+      </a>
+      <nav class="topnav">
+        <a href="#how">How it works</a>
+        <a href="#faq">FAQ</a>
+        <button class="icon-btn" id="themeToggle" type="button" aria-label="Toggle theme">
+          <span class="theme-icon">◐</span>
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- ---------------- Hero / search ---------------- -->
+      <section class="hero">
+        <div class="hero-inner">
+          <h1>
+            Paste a TeraBox link.<br />
+            <span class="grad">Get the files.</span>
+          </h1>
+          <p class="lede">
+            Browse every file in a TeraBox share, stream video straight in the browser, and grab
+            direct download links. No account, no app, no limits.
+          </p>
+
+          <form class="resolver" id="resolveForm" autocomplete="off">
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <input
+                id="linkInput"
+                type="url"
+                name="url"
+                placeholder="https://www.terabox.com/s/1AbCdEfGh"
+                aria-label="TeraBox share link"
+                required
+              />
+              <button
+                class="clear-btn"
+                id="clearBtn"
+                type="button"
+                aria-label="Clear"
+                hidden
+              >
+                ✕
+              </button>
+            </div>
+
+            <div class="input-wrap pwd-wrap" id="pwdWrap" hidden>
+              <svg class="input-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="4" y="10" width="16" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="2" />
+                <path d="M8 10V7a4 4 0 1 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2" />
+              </svg>
+              <input
+                id="pwdInput"
+                type="text"
+                name="pwd"
+                placeholder="Extraction code (4 characters)"
+                aria-label="Extraction code"
+                maxlength="8"
+              />
+            </div>
+
+            <button class="btn btn-primary" type="submit" id="goBtn">
+              <span class="btn-label">Resolve</span>
+              <span class="spinner" hidden></span>
+            </button>
+          </form>
+
+          <div class="hint-row">
+            <span class="chip">terabox.com</span>
+            <span class="chip">1024terabox.com</span>
+            <span class="chip">4funbox.co</span>
+            <span class="chip">nephobox.com</span>
+            <span class="chip">mirrobox.com</span>
+            <span class="chip">+ every mirror</span>
+          </div>
+
+          <div class="alert" id="alert" hidden></div>
+
+      <div class="connect-banner" id="connectBanner" hidden>
+        <div>
+          <strong>Backend not connected</strong>
+          <p class="meta" id="connectMeta">
+            This deployment has no teraboxvd server behind it. Point it at yours to resolve links.
+          </p>
+        </div>
+        <button class="btn btn-ghost" id="connectBtn" type="button">Connect server</button>
+      </div>
+        </div>
+      </section>
+
+      <!-- ---------------- File browser ---------------- -->
+      <section class="results" id="results" hidden>
+        <div class="results-head">
+          <div>
+            <h2 id="shareTitle">Files</h2>
+            <p class="meta" id="shareMeta"></p>
+          </div>
+          <div class="results-actions">
+            <button class="btn btn-ghost" id="copyLinkBtn" type="button">Copy link</button>
+            <button class="btn btn-ghost" id="backBtn" type="button" hidden>← Back</button>
+          </div>
+        </div>
+
+        <div class="crumbs" id="crumbs" hidden></div>
+
+        <div class="file-list" id="fileList"></div>
+      </section>
+
+      <!-- ---------------- How it works ---------------- -->
+      <section class="section" id="how">
+        <h2>How it works</h2>
+        <div class="steps">
+          <div class="step">
+            <span class="step-num">1</span>
+            <h3>Paste</h3>
+            <p>Drop in any TeraBox share link — the short <code>/s/1…</code> form or the older <code>sharing/link?surl=</code> form.</p>
+          </div>
+          <div class="step">
+            <span class="step-num">2</span>
+            <h3>Browse</h3>
+            <p>Every file and folder inside the share is listed with its real size. Walk into folders without losing your place.</p>
+          </div>
+          <div class="step">
+            <span class="step-num">3</span>
+            <h3>Stream or save</h3>
+            <p>Videos play instantly over HLS in the player. Other files give you a direct download link.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------------- FAQ ---------------- -->
+      <section class="section" id="faq">
+        <h2>Questions</h2>
+        <div class="faq">
+          <details>
+            <summary>Does it work without a TeraBox account?</summary>
+            <p>
+              Yes. Listing and streaming work anonymously. Getting a <em>direct</em> download link
+              needs either a TeraBox API key or your own TeraBox account connected to this server —
+              see <code>docs/REQUIREMENTS.md</code> for the one-line setup of each option.
+            </p>
+          </details>
+          <details>
+            <summary>What about links with an extraction code?</summary>
+            <p>
+              Paste the 4-character code in the second box (or add <code>?pwd=1234</code> to the link
+              itself) and the share unlocks.
+            </p>
+          </details>
+          <details>
+            <summary>Can I use this on my phone?</summary>
+            <p>
+              Yes — the site is fully responsive and the player is touch friendly. You can also add
+              it to your home screen; it ships as a PWA.
+            </p>
+          </details>
+          <details>
+            <summary>Is it legal to download files here?</summary>
+            <p>
+              Only use it for files you own or that the owner shared with you. Respect copyright and
+              the rights of the original creator.
+            </p>
+          </details>
+        </div>
+      </section>
+    </main>
+
+    <!-- ---------------- Player modal ---------------- -->
+    <div class="player-modal" id="playerModal" hidden>
+      <div class="player-backdrop" data-close></div>
+      <div class="player-box" role="dialog" aria-modal="true" aria-label="Video player">
+        <div class="player-head">
+          <strong id="playerTitle">Playing</strong>
+          <button class="icon-btn" type="button" data-close aria-label="Close player">✕</button>
+        </div>
+        <div class="player-body">
+          <video id="video" controls playsinline preload="metadata"></video>
+        </div>
+        <div class="player-foot">
+          <span id="playerMeta" class="meta"></span>
+          <a class="btn btn-ghost" id="playerDownload" href="#" download>Download</a>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>
+        <strong>TeraBoxVD</strong> — an independent tool. Not affiliated with TeraBox.
+        Only use it for files you own or are authorised to access.
+      </p>
+    </footer>
+
+    <script src="/assets/js/config.js"></script>
+    <script src="/vendor/hls.min.js"></script>
+    <script src="/assets/js/app.js"></script>
+  </body>
+</html>
